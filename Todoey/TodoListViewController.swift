@@ -45,5 +45,29 @@ class TodoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)    // cava a seesion
     }
     
+     // MARK: - SEZIONE --- aggiungi elementi ---
+    
+    @IBAction func addItemButtonPressed(_ sender: UIBarButtonItem) {
+        var elementoNovo = UITextField()
+        
+        //print("aggiungi")
+        let alert = UIAlertController(title: "AGGIUNGI", message: "un nuovo elemento alla lista", preferredStyle: .alert)
+        let action = UIAlertAction(title: "ZONTA", style: .default) {
+            (alert) in
+            // Codice eseguio quando selesionà el botton +
+            //print(elementoNovo.text!)
+            self.itemArray.append(elementoNovo.text!)
+            self.tableView.reloadData()     // fa el refresh dea tabea
+        }
+        alert.addTextField {
+            (alertTextField) in
+            alertTextField.placeholder = "zonta novo elemento"
+            elementoNovo = alertTextField
+            
+        }
+        alert.addAction(action)
+        present(alert, animated: true,completion: nil)
+    }
+    
 }
 
