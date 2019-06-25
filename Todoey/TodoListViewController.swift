@@ -12,9 +12,15 @@ class TodoListViewController: UITableViewController {
 
     var itemArray = ["remedios", "beijos", "abraços"]
     
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        // recupera i dati salvai
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
@@ -57,6 +63,9 @@ class TodoListViewController: UITableViewController {
             // Codice eseguio quando selesionà el botton +
             //print(elementoNovo.text!)
             self.itemArray.append(elementoNovo.text!)
+            
+            // salvemo l'array in user defaults
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
             self.tableView.reloadData()     // fa el refresh dea tabea
         }
         alert.addTextField {
