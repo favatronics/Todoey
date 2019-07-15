@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Item: Encodable {
-    var title : String = ""     // nome elemento lista
-    var done : Bool = false     // check di spunta
+class Item: Codable {
+    var title : String = ""     // nome de l'elemento dea lista
+    var done : Bool = false     // check de spunta
 }

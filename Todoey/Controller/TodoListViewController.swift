@@ -14,28 +14,10 @@ class TodoListViewController: UITableViewController {
     // path del file dove memorizzo i elementi dea lista
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    //let defaults = UserDefaults.standard
-    
-    
     // MARK: - SESION --- funsion viewDidLoad ---
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        //print(dataFilePath)
-        
-        let newItem1 = Item()
-        newItem1.title = "casso de budda 1"
-        itemArray.append(newItem1)
-        
-        let newItem2 = Item()
-        newItem2.title = "casso de budda 2"
-        itemArray.append(newItem2)
-        
-        // recupera i dati salvai
-        //if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-        //    itemArray = items
-        //}
+        loadItems()
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
@@ -61,7 +43,8 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done // cambia el segno de spunta quando seesionemo na riga
-        saveItems()
+        
+        saveItems() // salva el segno de spunta
        
         tableView.deselectRow(at: indexPath, animated: true) // assa a riga no evidenziada
     }
@@ -81,9 +64,6 @@ class TodoListViewController: UITableViewController {
             let newItem = Item()
             newItem.title = elementoNovo.text!
             self.itemArray.append(newItem)
-            
-            // salvemo l'array in user defaults
-            //self.defaults.set(self.itemArray, forKey: "TodoListArray")
             
             // salvemo a lista
             self.saveItems()
@@ -105,12 +85,26 @@ class TodoListViewController: UITableViewController {
         // utiizo un encoder
         let encoder = PropertyListEncoder()
         do {
-            let data = try encoder.encode(dataFilePath)
+            let data = try encoder.encode(itemArray)
             try data.write(to: dataFilePath!)
         } catch {
             print("casso no funsia l'encoder: \n\(error)")
         }
         self.tableView.reloadData()     // fa el refresh dea tabea
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            }
+            catch {
+                print("ERRORE DECODIFICA ARRAY ITEMS \(error)")
+            }
+        } else {
+            print("casso")
+        }
     }
     
 }
