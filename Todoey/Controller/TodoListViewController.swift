@@ -7,17 +7,19 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()
     // path del file dove memorizzo i elementi dea lista
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     // MARK: - SESION --- funsion viewDidLoad ---
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadItems()
+        //loadItems()
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
@@ -61,8 +63,10 @@ class TodoListViewController: UITableViewController {
             // Codice eseguio quando selesionà el botton +
             //print(elementoNovo.text!)
             
-            let newItem = Item()
+            //con CoreData
+            let newItem = Item(context: self.context)
             newItem.title = elementoNovo.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             
             // salvemo a lista
@@ -82,17 +86,16 @@ class TodoListViewController: UITableViewController {
     // MARK: - SEZIONE - metodi de manipoeasion del model
     // Salva i elementi dea lista
     func saveItems() {
-        // utiizo un encoder
-        let encoder = PropertyListEncoder()
+        
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("casso no funsia l'encoder: \n\(error)")
+            print("casso error nel salvar el context")
         }
         self.tableView.reloadData()     // fa el refresh dea tabea
     }
     
+    /*
     func loadItems() {
         if let data = try? Data(contentsOf: dataFilePath!) {
             let decoder = PropertyListDecoder()
@@ -105,7 +108,7 @@ class TodoListViewController: UITableViewController {
         } else {
             print("casso")
         }
-    }
+    }*/
     
 }
 
