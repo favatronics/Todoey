@@ -19,6 +19,7 @@ class TodoListViewController: UITableViewController {
     // MARK: - SESION --- funsion viewDidLoad ---
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         loadItems()
     }
 
@@ -86,7 +87,6 @@ class TodoListViewController: UITableViewController {
     // MARK: - SEZIONE - metodi de manipoeasion del model
     // Salva i elementi dea lista
     func saveItems() {
-        
         do {
             try context.save()
         } catch {
@@ -95,17 +95,46 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()     // fa el refresh dea tabea
     }
     
-    
-    func loadItems() {
-        let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
+    // func loadItems
+    // param esterno --> con
+    // param interno --> richiesta
+    // e valore di default --> Item.fetchRequest()
+    //
+    func loadItems(con richiesta: NSFetchRequest<Item> = Item.fetchRequest()) {
+        //let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
         do {
-            itemArray = try context.fetch(richiestaDati)
+            itemArray = try context.fetch(richiesta)
         } catch {
             print("ERRORE RICHIESTA DATI \(error)")
         }
         
-        
+        tableView.reloadData()
     }
     
 }
 
+
+// Estension che implementa a barra de ricerca
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
+        richiestaDati.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)//cd non tiene conto maiuscole, accenti etc
+        
+        richiestaDati.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems(con: richiestaDati)
+    }
+    
+    // torna aea lista inissial
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            //richiesta sul main thread
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder() // non più barra selezionata
+            }
+            
+        }
+    }
+}
