@@ -12,14 +12,14 @@ import CoreData
 class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()
-    // path del file dove memorizzo i elementi dea lista
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     // MARK: - SESION --- funsion viewDidLoad ---
     override func viewDidLoad() {
         super.viewDidLoad()
-        //loadItems()
+        loadItems()
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
@@ -95,20 +95,17 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()     // fa el refresh dea tabea
     }
     
-    /*
+    
     func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            }
-            catch {
-                print("ERRORE DECODIFICA ARRAY ITEMS \(error)")
-            }
-        } else {
-            print("casso")
+        let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemArray = try context.fetch(richiestaDati)
+        } catch {
+            print("ERRORE RICHIESTA DATI \(error)")
         }
-    }*/
+        
+        
+    }
     
 }
 
