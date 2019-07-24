@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="17G7024" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Item" representedClassName=".Item" syncable="YES" codeGenerationType="class">
+    <entity name="Category" representedClassName="Category" syncable="YES" codeGenerationType="class">
+        <attribute name="nome" attributeType="String" syncable="YES"/>
+        <relationship name="relazItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Items" inverseName="relazCategory" inverseEntity="Items" syncable="YES"/>
+    </entity>
+    <entity name="Items" representedClassName=".Item" syncable="YES" codeGenerationType="class">
         <attribute name="done" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="relazCategory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="relazItems" inverseEntity="Category" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="Items" positionX="3195.5" positionY="-4685.640625" width="128" height="60"/>
+        <element name="Category" positionX="2920.4140625" positionY="-4738.53515625" width="150.78125" height="75"/>
     </elements>
 </model>
