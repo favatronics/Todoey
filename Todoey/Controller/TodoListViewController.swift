@@ -12,15 +12,17 @@ import CoreData
 class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()
-    
+    var categoriaSelezionata : Category? {
+        didSet {
+            loadItems()
+        }
+    }
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     // MARK: - SESION --- funsion viewDidLoad ---
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loadItems()
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
@@ -68,6 +70,7 @@ class TodoListViewController: UITableViewController {
             let newItem = Item(context: self.context)
             newItem.title = elementoNovo.text!
             newItem.done = false
+            newItem.relazCategory = self.categoriaSelezionata
             self.itemArray.append(newItem)
             
             // salvemo a lista
@@ -100,8 +103,17 @@ class TodoListViewController: UITableViewController {
     // param interno --> richiesta
     // e valore di default --> Item.fetchRequest()
     //
-    func loadItems(con richiesta: NSFetchRequest<Item> = Item.fetchRequest()) {
-        //let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(con richiesta: NSFetchRequest<Item> = Item.fetchRequest(), predicato: NSPredicate? = nil) {
+        // Query soa categoria
+        let predicatoCategoria = NSPredicate(format: "relazCategory.nome MATCHES %@", categoriaSelezionata!.nome!)
+        //let predicatoComposto = NSCompoundPredicate(andPredicateWithSubpredicates: [predicatoCategoria, predicato])
+        
+        if let predicatoDue = predicato {
+            richiesta.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicatoCategoria, predicatoDue])
+        } else {
+            richiesta.predicate = predicatoCategoria
+        }
+        
         do {
             itemArray = try context.fetch(richiesta)
         } catch {
@@ -118,11 +130,11 @@ class TodoListViewController: UITableViewController {
 extension TodoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
-        richiestaDati.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)//cd non tiene conto maiuscole, accenti etc
+        let predicate =  NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)//cd non tiene conto maiuscole, accenti etc
         
         richiestaDati.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
-        loadItems(con: richiestaDati)
+        loadItems(con: richiestaDati, predicato: predicate)
     }
     
     // torna aea lista inissial

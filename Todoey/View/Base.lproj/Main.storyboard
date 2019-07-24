@@ -51,7 +51,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dgi-xm-dmd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1894" y="307"/>
+            <point key="canvasLocation" x="1836" y="-76"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="H7x-4a-g5L">
@@ -104,7 +104,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <segue destination="DFJ-UJ-FkD" kind="show" identifier="goToItems" id="xDs-uY-pf2"/>
+                        <segue destination="DFJ-UJ-FkD" kind="show" identifier="GoToItems" id="xDs-uY-pf2"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D0j-ue-0hG" userLabel="First Responder" sceneMemberID="firstResponder"/>

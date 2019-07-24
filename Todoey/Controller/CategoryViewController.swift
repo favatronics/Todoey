@@ -20,7 +20,7 @@ class CategoryViewController: UITableViewController {
         loadCategories()        // Carica i dati salvati SQLite
     }
     
-    // MARK: - Aggiungi nova categoria
+    // MARK: - Aggiungi nova categoria ----
     @IBAction func strucaBoton(_ sender: UIBarButtonItem) {
         var categoriaNova = UITextField()
         
@@ -44,7 +44,7 @@ class CategoryViewController: UITableViewController {
         present(alert, animated: true,completion: nil)
     }
     
-    // MARK: - TableView: metodi datasouce
+    // MARK: - TableView: metodi datasouce ----
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoriesArray.count
     }
@@ -57,16 +57,23 @@ class CategoryViewController: UITableViewController {
         return cell
     }
     
+    // MARK: - TableView: metodi delegate ----
     
-    
-    
-    // MARK: - TableView: metodi delegate
+    // metodo che agisce sulla riga selezionata
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        tableView.deselectRow(at: indexPath, animated: true) // assa a riga no evidenziada
+        performSegue(withIdentifier: "GoToItems", sender: self)  // lancia il segue alla vista Elementi
+        //tableView.deselectRow(at: indexPath, animated: true) // assa a riga no evidenziada
     }
     
-    // MARK: - TableView: metodi manipolazione dei dati
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinassionVC = segue.destination as! TodoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinassionVC.categoriaSelezionata = categoriesArray[indexPath.row]
+        }
+    }
+    
+    // MARK: - TableView: metodi manipolazione dei dati ----
     func loadCategories() {
         let richiesta : NSFetchRequest<Category> = Category.fetchRequest()
         do {
