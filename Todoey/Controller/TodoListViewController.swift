@@ -26,7 +26,6 @@ class TodoListViewController: UITableViewController {
     }
 
     // MARK: - SEZIONE --- Metodi di riempimento della tableview ---
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
     }
@@ -125,8 +124,7 @@ class TodoListViewController: UITableViewController {
     
 }
 
-
-// Estension che implementa a barra de ricerca
+// MARK: - Estension che implementa a barra de ricerca
 extension TodoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
@@ -137,7 +135,7 @@ extension TodoListViewController: UISearchBarDelegate {
         loadItems(con: richiestaDati, predicato: predicate)
     }
     
-    // torna aea lista inissial
+    // torna aea lista inissial col tastin x
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             loadItems()
