@@ -13,7 +13,7 @@ class TodoListViewController: UITableViewController {
 
     let realm = try! Realm()        // nova istanza realm
     
-    var todoItems: Results<Item>?   // formato realm
+    var todoItems: Results<Item>?   // formato realm RESULTS
     
     var categoriaSelezionata : Category? {
         didSet {
@@ -46,13 +46,19 @@ class TodoListViewController: UITableViewController {
     }
     
     // MARK: - SEZIONE --- Metodi delegate della tableview ---
-    
+    // metodo riga seesionada
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-//        todoItems?[indexPath.row].done = !todoItems?[indexPath.row].done   // cambia el segno de spunta quando seesionemo na riga
-//
-//        saveItems() // salva el segno de spunta
-       
+        if let item = todoItems?[indexPath.row] {
+            do {
+                try realm.write {
+                    item.done = !item.done
+                }
+            } catch {
+                print("ERRORE NEL SALVARE LA SPUNTA \(error)")
+            }
+        }
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true) // assa a riga no evidenziada
     }
     
@@ -73,6 +79,7 @@ class TodoListViewController: UITableViewController {
                     try self.realm.write {
                         let newItem = Item()
                         newItem.title = elementoNovo.text!
+                        newItem.dateCreated = Date()
                         currentCategory.items.append(newItem)
                     }
                 } catch {
@@ -92,37 +99,33 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true,completion: nil)
     }
     
-    // MARK: - SEZIONE - metodi de manipoeasion del model
-    
+// MARK: - SEZIONE - metodi de manipoeasion del model
     // func loadItems
     func loadItems() {
         todoItems = categoriaSelezionata?.items.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
-//    }
+    }
     
 }
 
 // MARK: - Estension che implementa a barra de ricerca
-//extension TodoListViewController: UISearchBarDelegate {
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let richiestaDati : NSFetchRequest<Item> = Item.fetchRequest()
-//        let predicate =  NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)//cd non tiene conto maiuscole, accenti etc
-//
-//        richiestaDati.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//        loadItems(con: richiestaDati, predicato: predicate)
-//    }
-//
-//    // torna aea lista inissial col tastin x
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchBar.text?.count == 0 {
-//            loadItems()
-//
-//            //richiesta sul main thread
-//            DispatchQueue.main.async {
-//                searchBar.resignFirstResponder() // non più barra selezionata
-//            }
-//
-//        }
-//    }
+extension TodoListViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        tableView.reloadData()
+    }
+    
+    // torna aea lista inissial col tastin x
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            //richiesta sul main thread
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder() // non più barra selezionata
+            }
+        }
+    }
+    
 }

@@ -29,8 +29,6 @@ class CategoryViewController: UITableViewController {
             (alert) in
                 let newCategory = Category()
                 newCategory.name = categoriaNova.text!
-            
-                //self.categoriesArray.append(newCategory) no serve fare append col realm perché se atuaiza da soeo
                 self.save(category: newCategory)   // salvemo a lista categorie
         }
         
@@ -53,7 +51,6 @@ class CategoryViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoCategoryCell", for: indexPath)
         cell.textLabel?.text = categoriesArray?[indexPath.row].name ?? "Nessuna categoria è stata inserita"
-        
         return cell
     }
     
@@ -75,9 +72,7 @@ class CategoryViewController: UITableViewController {
     
     // MARK: - TableView: metodi manipolazione dei dati ----
     func loadCategories() {
-        
         categoriesArray = realm.objects(Category.self)
-        
         tableView.reloadData()
     }
     
