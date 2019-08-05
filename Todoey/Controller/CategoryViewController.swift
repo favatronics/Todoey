@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()        // se pol far ! perché già attivo el realm
 
@@ -17,10 +18,11 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadCategories()        // Carica i dati salvati SQLite
+        loadCategories()            // Carica i dati salvati SQLite
+        tableView.separatorStyle = .none
     }
     
-    // MARK: - Aggiungi nova categoria ----
+// MARK: - Aggiungi nova categoria ----
     @IBAction func strucaBoton(_ sender: UIBarButtonItem) {
         var categoriaNova = UITextField()
         
@@ -29,7 +31,8 @@ class CategoryViewController: UITableViewController {
             (alert) in
                 let newCategory = Category()
                 newCategory.name = categoriaNova.text!
-                self.save(category: newCategory)   // salvemo a lista categorie
+                newCategory.colore = UIColor.randomFlat.hexValue()  // crea novo coeor
+                self.save(category: newCategory)                    // salvemo a lista categorie
         }
         
         alert.addAction(action)
@@ -42,19 +45,28 @@ class CategoryViewController: UITableViewController {
         present(alert, animated: true,completion: nil)
     }
     
-    // MARK: - TableView: metodi datasouce ----
+// MARK: - TableView: metodi datasouce ----
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoriesArray?.count ?? 1          // se no nil ritorna 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath) // ciama a supercalsse SwipeTable...
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoCategoryCell", for: indexPath)
-        cell.textLabel?.text = categoriesArray?[indexPath.row].name ?? "Nessuna categoria è stata inserita"
+        if let categoria = categoriesArray?[indexPath.row] {
+            cell.textLabel?.text = categoria.name
+            
+            guard let colCategoria = UIColor(hexString: categoria.colore) else {fatalError("errore colore categoria")}
+            
+            cell.backgroundColor = colCategoria
+            cell.textLabel?.textColor = ContrastColorOf(colCategoria, returnFlat: true)
+        }
+        
         return cell
     }
+
     
-    // MARK: - TableView: metodi delegate ----
+// MARK: - TableView: metodi delegate ----
     
     // metodo che agisce sulla riga selezionata
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -70,7 +82,7 @@ class CategoryViewController: UITableViewController {
         }
     }
     
-    // MARK: - TableView: metodi manipolazione dei dati ----
+// MARK: - TableView: metodi manipolazione dei dati ----
     func loadCategories() {
         categoriesArray = realm.objects(Category.self)
         tableView.reloadData()
@@ -86,4 +98,17 @@ class CategoryViewController: UITableViewController {
         }
         tableView.reloadData()    // fa el refresh dea tabea
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let rigaDaCancear = categoriesArray?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(rigaDaCancear)
+                }
+            } catch {
+                print ("ERROR nel cancear a riga \(error)")
+            }
+        }
+    }
 }
+
